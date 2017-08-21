@@ -1,0 +1,20 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "taskName": "dist",
+            "type": "shell",
+            "command": "mvn install -Drelease -e",
+            "group": "build"
+        },
+
+        {
+            "taskName": "dist-no-download",
+            "type": "shell",
+            "command": "mvn install -Drelease -e -o",
+            "group": "build"
+        }
+    ]
+}
