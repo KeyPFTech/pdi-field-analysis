@@ -44,6 +44,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * Field Analysis
@@ -218,10 +220,42 @@ public class FieldAnalysis extends BaseStep implements StepInterface {
     Object[] rows = new Object[data.inputRowMeta.size() ]; // number of fields
     // one row per field name
     // for each row, field name, count, sum, min, max, mean, distinctValues(count of)
+    Object[] row;
+    ArrayList<String> valueList;
+    HashSet<String> distinctValues;
+    Iterator<String> distinctValuesIter;
+    long valueListSize;
+    ArrayList<Double> allNumericValues;
+    Double dval;
+    Iterator<Double> dIter;
+    long numNumeric;
+    long notNumeric;
+    long allNumericSize;
+    double mean;
+    double sigma;
+    double skewnessSigma;
+    double xMinusMean;
+    double stddev;
+    HashMap<String,Long> patternCounts;
+    
+    long largestCount;
+    String largestFormat;
+    String dateFormat;
+    long myCount;
+
+    Object key;
+    Set<String> keySet;
+    Iterator<String> keyIter;
+    Pattern datePattern;
+    long numMatches;
+
+    String val;
+
+    Matcher newMatcher;
 
     for ( int i = 0; i < data.fieldnrs.length; i++ ) {
       
-      Object[] row = RowDataUtil.allocateRowData(13 ); // 13 summary fields
+      row = RowDataUtil.allocateRowData(13 ); // 13 summary fields
       rows[i] = row;
 
       // transpose fields to rows
@@ -232,14 +266,14 @@ public class FieldAnalysis extends BaseStep implements StepInterface {
       row[0] = data.fieldNames[i];
       // info for all types
       // Loop over all values to determine type
-      ArrayList valueList = (ArrayList)data.allValues[i];
-      HashSet<String> distinctValues = (HashSet<String>)data.distinctValues[i];
+      valueList = (ArrayList)data.allValues[i];
+      distinctValues = (HashSet<String>)data.distinctValues[i];
 
-      long valueListSize = valueList.size();
+      valueListSize = valueList.size();
 
-      ArrayList<Double> allNumericValues = (ArrayList<Double>)data.allNumericValues[i];
-      long numNumeric = allNumericValues.size();
-      long notNumeric = valueListSize - numNumeric;
+      allNumericValues = (ArrayList<Double>)data.allNumericValues[i];
+      numNumeric = allNumericValues.size();
+      notNumeric = valueListSize - numNumeric;
       /*
       for (String val: valueList ) {
         try {
@@ -263,22 +297,24 @@ public class FieldAnalysis extends BaseStep implements StepInterface {
         // median, std dev, skewness
         // sort all values once
         Collections.sort(allNumericValues);
-        long allNumericSize = allNumericValues.size();
+        allNumericSize = allNumericValues.size();
         if (allNumericSize > 0) {
           row[9] = allNumericValues.get((int)Math.floor(allNumericSize / 2)); // median
   
           // now for std dev and skewness
           // skewness = [n / (n -1) (n - 2)] sum[(x_i - mean)^3] / std^3 
-          double mean = ((Double)data.mean[i]).doubleValue();
-          double sigma = 0.0d;
-          double skewnessSigma = 0.0d;
-          double xMinusMean = 0.0d;
-          for (Double val: allNumericValues) {
-            xMinusMean = val.doubleValue() - mean;
+          mean = ((Double)data.mean[i]).doubleValue();
+          sigma = 0.0d;
+          skewnessSigma = 0.0d;
+          xMinusMean = 0.0d;
+          dIter = allNumericValues.iterator();
+          while (dIter.hasNext()) {
+            dval = dIter.next();
+            xMinusMean = dval.doubleValue() - mean;
             sigma += Math.pow(xMinusMean,2);
             skewnessSigma += Math.pow(xMinusMean,3);
           }
-          double stddev = sigma / (valueList.size() - 1);
+          stddev = sigma / (valueList.size() - 1);
           row[10] = new Double(stddev); // stddev
           if (allNumericSize > 3 && 0 != stddev ) {
             row[11] = new Double(
@@ -296,20 +332,36 @@ public class FieldAnalysis extends BaseStep implements StepInterface {
         // categorical variable analysis
         // TODO CHECK FOR DATE FORMATS HERE (may only be two dates mentioned - so need to check before boolean)
         // TODO performance check - check for hypehsn(1) and slashes if its a date, or : colons if a time
-        HashMap<String,Long> patternCounts = new HashMap<String,Long>();
-        for (Object key : datePatternMap.keySet()) {
-          Pattern datePattern = (Pattern)datePatternMap.get((String)key);
-          long numMatches = 0;
-          for (String val : distinctValues) {
-            Matcher newMatcher = datePattern.matcher(val);
-            if (newMatcher.matches()) {
-              numMatches++;
-            }
-          }
-          if (numMatches > 0) { // no point in adding count if doesn't match!
-            patternCounts.put((String)key,numMatches);
-          }
-        }
+        
+        patternCounts = new HashMap<String,Long>();
+
+        distinctValuesIter = distinctValues.iterator();
+        while (distinctValuesIter.hasNext()) {
+          val = distinctValuesIter.next();
+
+          // NB this check is here as a single check for any date pattern is quicker than a set of specific date patterns
+          //    Overall execution will be slower if most fields are dates, faster otherwise
+          // TODO make this more definitive, and a Pattern and Matcher. E.g. matches string with / or - for dates
+          if (val.contains("/")) {
+
+            keySet = (Set<String>)datePatternMap.keySet();
+            keyIter = keySet.iterator();
+            while (keyIter.hasNext()) {
+              key = keyIter.next();
+              datePattern = (Pattern)datePatternMap.get((String)key);
+              numMatches = 0;
+              newMatcher = datePattern.matcher(val);
+              if (newMatcher.matches()) {
+                numMatches++;
+              }
+          
+              if (numMatches > 0) { // no point in adding count if doesn't match!
+                patternCounts.put((String)key,numMatches);
+              }
+            } // end date pattern inner loop
+          } // end if date boundary checker
+        } // end distinct values loop
+
         // time series
         // min date
         // max date
@@ -327,11 +379,14 @@ public class FieldAnalysis extends BaseStep implements StepInterface {
           row[1] = "TimeSeries";
           row[12] = Boolean.FALSE;
           //row[14] = "Unknown"; // placeholder
-          long largestCount = 0;
-          String largestFormat = "Unknown";
-          for (Object key: patternCounts.keySet()) {
-            String dateFormat = (String)key;
-            long myCount = patternCounts.get(dateFormat);
+          largestCount = 0;
+          largestFormat = "Unknown";
+          keySet = (Set<String>)patternCounts.keySet();
+          keyIter = keySet.iterator();
+          while (keyIter.hasNext()) {
+            key = keyIter.next();
+            dateFormat = (String)key;
+            myCount = patternCounts.get(dateFormat);
             if (myCount > largestCount) {
               largestCount = myCount;
               largestFormat = dateFormat;
@@ -411,9 +466,9 @@ public class FieldAnalysis extends BaseStep implements StepInterface {
       Object[] rows = buildAggregates(); // build a resume
       
       meta.getFields( getInputRowMeta(), getStepname(), null, null, this, repository, metaStore );
-      
+      Object[] row;
       for (int rowNum = 0;rowNum < rows.length;rowNum++) {
-        Object[] row = (Object[])rows[rowNum];
+        row = (Object[])rows[rowNum];
         if (null != row) {
           putRow( data.outputRowMeta, row);
         } else {
