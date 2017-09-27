@@ -59,9 +59,9 @@ import org.w3c.dom.Node;
  *
  */
 
-@Step( id = "FieldAnalysis0.2",
+@Step( id = "FieldAnalysis",
  image = "core/src/main/resources/PDI_MD_Profiler_V1.svg",
-  i18nPackageName = "org.pentaho.di.sdk.samples.steps.demo", name = "FieldAnalysisMeta.Name",
+  i18nPackageName = "org.pentaho.di.trans.steps.fieldanalysis", name = "FieldAnalysisMeta.Name",
   description = "FieldAnalysisMeta.Description",
   categoryDescription = "i18n:org.pentaho.di.job:JobCategory.Category.Statistics" )
 
