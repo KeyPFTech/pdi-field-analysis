@@ -34,35 +34,42 @@ import java.util.HashSet;
  *
  */
 public class FieldAnalysisData extends BaseStepData implements StepDataInterface {
-  public int[] fieldnrs;
-  public int nrfields;
-  public RowMetaInterface outputRowMeta;
-  public RowMetaInterface inputRowMeta;
-  
-  public Object[] values;
-  
-  public Object[] fieldNames;
-  
-  // fieldName, type, then...
-  public Object[] type; // continuous, categorical, time
-  public long[] counts; // non nulls only counted
-  public Object[] distinctValues; // HashSet 
-  public Object[] allValues; // ArrayList<String> 
-  public Object[] allNumericValues; // ArrayList<Double>
-  public long[] nullCount;
-  public Object[] min;
-  public Object[] max;
-  public Object[] sum; // to help calculate std dev and mean
+ 
+	  public RowMetaInterface outputRowMeta;
+	  public RowMetaInterface inputRowMeta;
+	
+public int[] fieldnrs;
+public int nrfields;
 
-  public Object[] mean;
-  public Object[] median;
-  public Object[] stddev;
-  public Object[] skewness;
+public Object[] values;
 
-  public Object[] isBoolean; // Boolean values
+public Object[] fieldNames;
 
-  public FieldAnalysisData() {
-    super();
-  }
+// fieldName, type, then...
+public Object[] type; // continuous, categorical, time
+public long[] counts; // non nulls only counted
+public Object[] distinctValues; // HashSet 
+public Object[] allValues; // ArrayList<String> 
+public Object[] allNumericValues; // ArrayList<Double>
+public long[] nullCount;
+public Object[] min;
+public Object[] max;
+public Object[] sum; // to help calculate std dev and mean
+
+public Object[] mean;
+public Object[] median;
+public Object[] stddev;
+public Object[] skewness;
+
+public Object[] isBoolean; // Boolean values
+
+public Object[] uniqueNames; //String containing all unique values for a categorical variable
+public Object[] uniqueValues; //String containing all unique values for a categorical variable
+public Object[] maxLength;
+
+public FieldAnalysisData() {
+  super();
+}
+
 
 }
