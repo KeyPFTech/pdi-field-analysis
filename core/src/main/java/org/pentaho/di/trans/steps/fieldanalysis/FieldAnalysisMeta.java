@@ -60,7 +60,7 @@ import org.w3c.dom.Node;
  */
 
 @Step( id = "FieldAnalysis",
- image = "PDI_MD_Profiler_V1.svg",
+ image = "field_analysis_plugin.svg",
   i18nPackageName = "org.pentaho.di.trans.steps.fieldanalysis", name = "FieldAnalysisMeta.Name",
   description = "FieldAnalysisMeta.Description",
   categoryDescription = "StatisticsCategory.Name" )
