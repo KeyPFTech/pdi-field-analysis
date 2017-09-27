@@ -59,8 +59,9 @@ import org.w3c.dom.Node;
  *
  */
 
-@Step( id = "FieldAnalysis", image = "AGG.svg",
-  i18nPackageName = "org.pentaho.di.trans.steps.fieldanalysis", name = "FieldAnalysisMeta.Name",
+@Step( id = "FieldAnalysis0.2",
+ image = "core/src/main/resources/PDI_MD_Profiler_V1.svg",
+  i18nPackageName = "org.pentaho.di.sdk.samples.steps.demo", name = "FieldAnalysisMeta.Name",
   description = "FieldAnalysisMeta.Description",
   categoryDescription = "i18n:org.pentaho.di.job:JobCategory.Category.Statistics" )
 
@@ -329,7 +330,16 @@ public class FieldAnalysisMeta extends BaseStepMeta implements StepMetaInterface
       vm = new ValueMeta("Dispersion",ValueMetaInterface.TYPE_NUMBER);
       vm.setOrigin(name);
       row.addValueMeta(vm);
-
+      vm = new ValueMeta("UniqueNames",ValueMetaInterface.TYPE_STRING);
+      vm.setOrigin(name);
+      row.addValueMeta(vm);
+      vm = new ValueMeta("UniqueValues",ValueMetaInterface.TYPE_STRING);
+      vm.setOrigin(name);
+      row.addValueMeta(vm);
+      vm = new ValueMeta("MaxLength",ValueMetaInterface.TYPE_NUMBER);
+      vm.setOrigin(name);
+      row.addValueMeta(vm);
+      
       r.addRowMeta(row);
       
       // WE MAY NEED TO STILL CALL REMOVE VALUE META FOR DELETED FIELDS
@@ -347,7 +357,7 @@ public class FieldAnalysisMeta extends BaseStepMeta implements StepMetaInterface
       throw new KettleStepException( e );
     }
   }
-  /*
+ 
   public void getFieldsFromInput( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
   VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
   try {
@@ -382,7 +392,7 @@ public class FieldAnalysisMeta extends BaseStepMeta implements StepMetaInterface
   } catch ( Exception e ) {
     throw new KettleStepException( e );
   }
-}*/
+  }
 
   @Override
   public String getXML() {

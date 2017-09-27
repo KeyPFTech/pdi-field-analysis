@@ -70,6 +70,7 @@ public class FieldAnalysis extends BaseStep implements StepInterface {
     String regex = "[\\x00-\\x20]*[+-]?(((((\\p{Digit}+)(\\.)?((\\p{Digit}+)?)([eE][+-]?(\\p{Digit}+))?)|(\\.((\\p{Digit}+))([eE][+-]?(\\p{Digit}+))?)|(((0[xX](\\p{XDigit}+)(\\.)?)|(0[xX](\\p{XDigit}+)?(\\.)(\\p{XDigit}+)))[pP][+-]?(\\p{Digit}+)))[fFdD]?))[\\x00-\\x20]*";
     numberPattern = Pattern.compile(regex); // why do I need to compile? - SPEED!!!!!
     //numberMatcher = numberPattern.matcher("");
+    
     datePatternMap = new HashMap<String,Pattern>();
     datePatternMap.put("dd/MM/yy",Pattern.compile("[0123]?[0-9]/(0?[1-9]|1[0-2])/[0-9][0-9]"));
     datePatternMap.put("MM/dd/yy",Pattern.compile("(0?[1-9]|1[0-2])/[0123]?[0-9]/[0-9][0-9]"));
@@ -248,14 +249,20 @@ public class FieldAnalysis extends BaseStep implements StepInterface {
     Iterator<String> keyIter;
     Pattern datePattern;
     long numMatches;
-
+    
+    HashMap<String, Integer> histogram;
+    long maxLength = -1;
+    
     String val;
-
+ 
     Matcher newMatcher;
 
+    int NUM_SUM_FIELDS = 18;
+    
     for ( int i = 0; i < data.fieldnrs.length; i++ ) {
       
-      row = RowDataUtil.allocateRowData(13 ); // 13 summary fields
+      
+      row = RowDataUtil.allocateRowData(NUM_SUM_FIELDS); // summary fields
       rows[i] = row;
 
       // transpose fields to rows
@@ -268,12 +275,16 @@ public class FieldAnalysis extends BaseStep implements StepInterface {
       // Loop over all values to determine type
       valueList = (ArrayList)data.allValues[i];
       distinctValues = (HashSet<String>)data.distinctValues[i];
-
+      
+      maxLength  = -1;
+      
       valueListSize = valueList.size();
 
       allNumericValues = (ArrayList<Double>)data.allNumericValues[i];
       numNumeric = allNumericValues.size();
       notNumeric = valueListSize - numNumeric;
+      
+      histogram = new HashMap<String, Integer>();
       /*
       for (String val: valueList ) {
         try {
@@ -285,6 +296,7 @@ public class FieldAnalysis extends BaseStep implements StepInterface {
         }
       }
       */
+      
       if (numNumeric > notNumeric && ( 2 != distinctValues.size())) {
         // continuous numeric
         row[1] = "Continuous";
@@ -329,6 +341,30 @@ public class FieldAnalysis extends BaseStep implements StepInterface {
         // categorical or boolean or date
         row[1] = "Categorical";
         
+        
+        
+        //#######################################################################################################
+        //
+        //  Jonathan 
+        //
+        //#######################################################################################################
+        //Go through whole list of values to count appearance of individual values
+        
+        //Intialize hashmap 
+        Iterator<String> iter = distinctValues.iterator();
+        while(iter.hasNext()){
+        	histogram.put(iter.next(), 0);
+        }
+        		
+        Iterator<String> valueIterator = valueList.iterator();
+        
+        while(valueIterator.hasNext()) {
+        	String i_key = valueIterator.next();
+        	Integer i_val = histogram.get(i_key) + 1;
+        	histogram.put(i_key, i_val);
+        }
+       //#######################################################################################################
+        
         // categorical variable analysis
         // TODO CHECK FOR DATE FORMATS HERE (may only be two dates mentioned - so need to check before boolean)
         // TODO performance check - check for hypehsn(1) and slashes if its a date, or : colons if a time
@@ -336,9 +372,14 @@ public class FieldAnalysis extends BaseStep implements StepInterface {
         patternCounts = new HashMap<String,Long>();
 
         distinctValuesIter = distinctValues.iterator();
+
+
+        
         while (distinctValuesIter.hasNext()) {
           val = distinctValuesIter.next();
-
+          
+          
+          
           // NB this check is here as a single check for any date pattern is quicker than a set of specific date patterns
           //    Overall execution will be slower if most fields are dates, faster otherwise
           // TODO make this more definitive, and a Pattern and Matcher. E.g. matches string with / or - for dates
@@ -394,6 +435,7 @@ public class FieldAnalysis extends BaseStep implements StepInterface {
           }
           row[14] = largestFormat;
           // TODO store the count somewhere. Do we want to return multiples??? (comma delimited date formats and counts)
+          
         } else {
           // 0 match - so not a date! Is it a boolean?
 
@@ -422,9 +464,38 @@ public class FieldAnalysis extends BaseStep implements StepInterface {
         // all values size must also be greater than 0
         row[15] = (1.0d*distinctValues.size()) / (1.0d*valueList.size()); // forcing double precision division, not integer
       }
-
-
-
+      
+      
+      //#######################################################################################################
+      //
+      //  Jonathan 
+      //	TODO: maxLength
+      //#######################################################################################################
+      if ((row[1] == "Categorical") && (0 != distinctValues.size()))
+      {
+    	  
+    	 String i_key;
+    	 String uniqueNames = "";
+    	 String uniqueVals = "";
+    	 
+    	Iterator<String> keys = histogram.keySet().iterator();
+    	
+    	while(keys.hasNext()) {
+    		i_key = keys.next();
+    		uniqueNames += i_key + "|";
+    		uniqueVals +=  histogram.get(i_key).toString() + "|";
+    		maxLength  = (long) Math.max(maxLength, (long) i_key.length());
+    	}
+    	
+    	row[16] = uniqueNames.substring(0, uniqueNames.length() - 1);
+        row[17] = uniqueVals.substring(0, uniqueVals.length() - 1);
+        row[18] = maxLength;
+      }
+      else
+      { row[16] = "";
+      	row[17] = "";
+      	row[18] = 0.0;}
+    //#######################################################################################################
 
 /*
       switch ( meta.getAggregateType()[i] ) {
@@ -450,6 +521,8 @@ public class FieldAnalysis extends BaseStep implements StepInterface {
       }
       */
     } // field nrs loop
+
+    
 
     return rows;
   }
@@ -485,6 +558,9 @@ public class FieldAnalysis extends BaseStep implements StepInterface {
 
       //data.outputRowMeta = getInputRowMeta().clone();
       data.inputRowMeta = getInputRowMeta();
+      
+      
+      
       data.outputRowMeta = new RowMeta();
       data.outputRowMeta.addValueMeta(new ValueMeta("FieldName",ValueMetaInterface.TYPE_STRING));
       data.outputRowMeta.addValueMeta(new ValueMeta("Type",ValueMetaInterface.TYPE_STRING));
@@ -502,17 +578,59 @@ public class FieldAnalysis extends BaseStep implements StepInterface {
       data.outputRowMeta.addValueMeta(new ValueMeta("DataType",ValueMetaInterface.TYPE_STRING));
       data.outputRowMeta.addValueMeta(new ValueMeta("Format",ValueMetaInterface.TYPE_STRING));
       data.outputRowMeta.addValueMeta(new ValueMeta("Dispersion",ValueMetaInterface.TYPE_NUMBER));
+      data.outputRowMeta.addValueMeta(new ValueMeta("UniqueNames",ValueMetaInterface.TYPE_STRING));
+      data.outputRowMeta.addValueMeta(new ValueMeta("UniqueValues",ValueMetaInterface.TYPE_STRING));
+      data.outputRowMeta.addValueMeta(new ValueMeta("MaxLength",ValueMetaInterface.TYPE_NUMBER));
       
-      for ( int i = 0; i < meta.getFieldName().length; i++ ) {
-        String fieldName = meta.getFieldName()[i] ;
-        data.fieldnrs[i] = getInputRowMeta().indexOfValue( fieldName);
+      
+      
+      //Meta data creation based on first row
+      
+      data.nrfields = data.inputRowMeta.getFieldNames().length; 
+      data.fieldnrs = new int[data.inputRowMeta.getFieldNames().length];     
+      data.values= new Object[data.inputRowMeta.getFieldNames().length];     
+      data.fieldNames= new Object[data.inputRowMeta.getFieldNames().length];
+      
+      // fieldName, type, then...
+      data.type = new Object[data.inputRowMeta.getFieldNames().length];
+      data.counts  = new long[data.inputRowMeta.getFieldNames().length];
+      data.distinctValues = new Object[data.inputRowMeta.getFieldNames().length];
+      data.allValues= new Object[data.inputRowMeta.getFieldNames().length];
+      data.allNumericValues= new Object[data.inputRowMeta.getFieldNames().length];
+      data.nullCount = new long[data.inputRowMeta.getFieldNames().length];
+      data.min= new Object[data.inputRowMeta.getFieldNames().length];
+      data.max= new Object[data.inputRowMeta.getFieldNames().length];
+      data.sum= new Object[data.inputRowMeta.getFieldNames().length];
+      data.mean = new Object[data.inputRowMeta.getFieldNames().length];
+      data.median = new Object[data.inputRowMeta.getFieldNames().length];
+      data.stddev = new Object[data.inputRowMeta.getFieldNames().length];
+      data.skewness = new Object[data.inputRowMeta.getFieldNames().length];
+      data.isBoolean= new Object[data.inputRowMeta.getFieldNames().length];
+      
+//      data.uniqueNames= new Object[data.inputRowMeta.getFieldNames().length];
+//      data.uniqueValues= new Object[data.inputRowMeta.getFieldNames().length];
+//      data.maxLength= new Object[data.inputRowMeta.getFieldNames().length];
+//      
+      
+
+      
+      for ( int i = 0; i < data.inputRowMeta.getFieldNames().length; i++ ) {
+      //for ( int i = 0; i < meta.getFieldName().length; i++ ) {
+        String fieldName = data.inputRowMeta.getFieldNames()[i] ;
+        
+        //logError(fieldName);
+        //logError(new Integer(data.inputRowMeta.indexOfValue( fieldName)).toString());
+        //logError(data.fieldnrs.toString());
+        
+        data.fieldnrs[i] = data.inputRowMeta.indexOfValue( fieldName);
         data.fieldNames[i] = fieldName;
         if ( data.fieldnrs[i] < 0 ) {
-          logError( BaseMessages.getString( PKG, "FieldAnalysis.Log.CouldNotFindField", meta.getFieldName()[i] ) );
+          logError( BaseMessages.getString( PKG, "FieldAnalysis.Log.CouldNotFindField", data.inputRowMeta.getFieldNames()[i] ) );
           setErrors( 1 );
           stopAll();
           return false;
         }
+        
         data.counts[i] = 0L;
         data.nullCount[i] = 0L;
         data.sum[i] = 0.0;
@@ -520,6 +638,7 @@ public class FieldAnalysis extends BaseStep implements StepInterface {
         data.allValues[i] = new ArrayList<String>();
         data.allNumericValues[i] = new ArrayList<Double>();
       }
+      
       
       
     }
@@ -540,27 +659,28 @@ public class FieldAnalysis extends BaseStep implements StepInterface {
     data = (FieldAnalysisData) sdi;
 
     if ( super.init( smi, sdi ) ) {
-      int nrfields = meta.getFieldName().length;
-      data.fieldnrs = new int[nrfields];
-      data.values = new Object[nrfields];
-      data.counts = new long[nrfields];
-
-      data.fieldNames = new Object[nrfields];
-
-      data.type = new Object[nrfields];
-      data.max = new Object[nrfields];
-      data.min = new Object[nrfields];
-      data.distinctValues = new Object[nrfields];
-      data.allValues = new Object[nrfields];
-      data.allNumericValues = new Object[nrfields];
-      data.nullCount = new long[nrfields];
-      data.sum = new Object[nrfields];
-
-      data.mean = new Object[nrfields];
-      data.median = new Object[nrfields];
-      data.stddev = new Object[nrfields];
-      data.skewness = new Object[nrfields];
-      data.isBoolean = new Object[nrfields];
+    	
+//      int nrfields = meta.getFieldName().length;
+//      data.fieldnrs = new int[nrfields];
+//      data.values = new Object[nrfields];
+//      data.counts = new long[nrfields];
+//
+//      data.fieldNames = new Object[nrfields];
+//
+//      data.type = new Object[nrfields];
+//      data.max = new Object[nrfields];
+//      data.min = new Object[nrfields];
+//      data.distinctValues = new Object[nrfields];
+//      data.allValues = new Object[nrfields];
+//      data.allNumericValues = new Object[nrfields];
+//      data.nullCount = new long[nrfields];
+//      data.sum = new Object[nrfields];
+//
+//      data.mean = new Object[nrfields];
+//      data.median = new Object[nrfields];
+//      data.stddev = new Object[nrfields];
+//      data.skewness = new Object[nrfields];
+//      data.isBoolean = new Object[nrfields];
 
       return true;
     }
