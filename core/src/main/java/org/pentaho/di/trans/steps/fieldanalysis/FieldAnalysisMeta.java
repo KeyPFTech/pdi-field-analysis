@@ -60,10 +60,10 @@ import org.w3c.dom.Node;
  */
 
 @Step( id = "FieldAnalysis",
- image = "core/src/main/resources/PDI_MD_Profiler_V1.svg",
+ image = "PDI_MD_Profiler_V1.svg",
   i18nPackageName = "org.pentaho.di.trans.steps.fieldanalysis", name = "FieldAnalysisMeta.Name",
   description = "FieldAnalysisMeta.Description",
-  categoryDescription = "i18n:org.pentaho.di.job:JobCategory.Category.Statistics" )
+  categoryDescription = "StatisticsCategory.Name" )
 
 public class FieldAnalysisMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = FieldAnalysisMeta.class; // for i18n purposes, needed by Translator2!!
