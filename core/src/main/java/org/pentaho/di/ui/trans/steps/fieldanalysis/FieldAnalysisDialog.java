@@ -20,7 +20,7 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.ui.trans.steps;
+package org.pentaho.di.ui.trans.steps.fieldanalysis;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
