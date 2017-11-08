@@ -68,21 +68,21 @@ public class FieldAnalysis extends BaseStep implements StepInterface {
     Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
     String regex = "[\\x00-\\x20]*[+-]?(((((\\p{Digit}+)(\\.)?((\\p{Digit}+)?)([eE][+-]?(\\p{Digit}+))?)|(\\.((\\p{Digit}+))([eE][+-]?(\\p{Digit}+))?)|(((0[xX](\\p{XDigit}+)(\\.)?)|(0[xX](\\p{XDigit}+)?(\\.)(\\p{XDigit}+)))[pP][+-]?(\\p{Digit}+)))[fFdD]?))[\\x00-\\x20]*";
-    numberPattern = Pattern.compile(regex); // why do I need to compile? - SPEED!!!!!
+    numberPattern = Pattern.compile( regex ); // why do I need to compile? - SPEED!!!!!
     //numberMatcher = numberPattern.matcher("");
-    
-    datePatternMap = new HashMap<String,Pattern>();
-    datePatternMap.put("dd/MM/yy",Pattern.compile("[0123]?[0-9]/(0?[1-9]|1[0-2])/[0-9][0-9]"));
-    datePatternMap.put("MM/dd/yy",Pattern.compile("(0?[1-9]|1[0-2])/[0123]?[0-9]/[0-9][0-9]"));
-    datePatternMap.put("dd/MM/yyyy",Pattern.compile("[0123]?[0-9]/(0?[1-9]|1[0-2])/[0-9][0-9][0-9][0-9]"));
-    datePatternMap.put("MM/dd/yyyy",Pattern.compile("(0?[1-9]|1[0-2])/[0123]?[0-9]/[0-9][0-9][0-9][0-9]"));
-    datePatternMap.put("dd/MM/yyyy HH:mm",Pattern.compile("[0123]?[0-9]/(0?[1-9]|1[0-2])/[0-9][0-9][0-9][0-9] ([0-1][0-9]|2[0-4]):[0-5][0-9]"));
-    datePatternMap.put("MM/dd/yyyy HH:mm",Pattern.compile("(0?[1-9]|1[0-2])/[0123]?[0-9]/[0-9][0-9][0-9][0-9] ([0-1][0-9]|2[0-4]):[0-5][0-9]"));
+
+    datePatternMap = new HashMap<String, Pattern>();
+    datePatternMap.put( "dd/MM/yy", Pattern.compile( "[0123]?[0-9]/(0?[1-9]|1[0-2])/[0-9][0-9]" ) );
+    datePatternMap.put( "MM/dd/yy", Pattern.compile( "(0?[1-9]|1[0-2])/[0123]?[0-9]/[0-9][0-9]" ) );
+    datePatternMap.put( "dd/MM/yyyy", Pattern.compile( "[0123]?[0-9]/(0?[1-9]|1[0-2])/[0-9][0-9][0-9][0-9]" ) );
+    datePatternMap.put( "MM/dd/yyyy", Pattern.compile( "(0?[1-9]|1[0-2])/[0123]?[0-9]/[0-9][0-9][0-9][0-9]" ) );
+    datePatternMap.put( "dd/MM/yyyy HH:mm", Pattern.compile( "[0123]?[0-9]/(0?[1-9]|1[0-2])/[0-9][0-9][0-9][0-9] ([0-1][0-9]|2[0-4]):[0-5][0-9]" ) );
+    datePatternMap.put( "MM/dd/yyyy HH:mm", Pattern.compile( "(0?[1-9]|1[0-2])/[0123]?[0-9]/[0-9][0-9][0-9][0-9] ([0-1][0-9]|2[0-4]):[0-5][0-9]" ) );
   }
 
-  private synchronized boolean isNumber(String val) {
+  private synchronized boolean isNumber( String val ) {
     //numberMatcher.reset(val); // RESET results in invalid matches (matching any number within a string, for example)
-    Matcher newMatcher = numberPattern.matcher(val);
+    Matcher newMatcher = numberPattern.matcher( val );
     return newMatcher.matches();
   }
 
@@ -99,51 +99,51 @@ public class FieldAnalysis extends BaseStep implements StepInterface {
 
         // calculate our aggregates here
         String number = valueMeta.getString( valueData );
-        
-        if (data.distinctValues[i] == null) {
+
+        if ( data.distinctValues[i] == null ) {
           data.distinctValues[i] = new HashSet<String>();
         }
-        ((HashSet)data.distinctValues[i]).add(number); // automatically removed duplicates
-        if (data.allValues[i] == null) {
+        ((HashSet) data.distinctValues[i]).add( number ); // automatically removed duplicates
+        if ( data.allValues[i] == null ) {
           data.allValues[i] = new ArrayList<String>();
         }
-        ((ArrayList)data.allValues[i]).add(number);
+        ((ArrayList) data.allValues[i]).add( number );
 
         // if number...
-        if (isNumber(number) && ((HashSet)data.distinctValues[i]).size() != 2) {
+        if ( isNumber( number ) && ((HashSet) data.distinctValues[i]).size() != 2 ) {
           //data.type[i] = "Continuous";
-          double numberValue = Double.parseDouble(number);
-          
-          if (data.allNumericValues[i] == null) {
+          double numberValue = Double.parseDouble( number );
+
+          if ( data.allNumericValues[i] == null ) {
             data.allNumericValues[i] = new ArrayList<String>();
           }
-          ((ArrayList)data.allNumericValues[i]).add(numberValue);
-          
-          if (data.sum[i] == null) {
+          ((ArrayList) data.allNumericValues[i]).add( numberValue );
+
+          if ( data.sum[i] == null ) {
             data.sum[i] = numberValue;
           } else {
             data.sum[i] = new Double( ( (Double) data.sum[i] ).doubleValue() + numberValue );
           }
-          if (data.min[i] == null) {
+          if ( data.min[i] == null ) {
             data.min[i] = numberValue;
           } else {
-            if ( ((Double) data.min[i]) > numberValue) {
+            if ( ((Double) data.min[i] ) > numberValue ) {
               data.min[i] = numberValue;
             }
           }
-          if (data.max[i] == null) {
+          if ( data.max[i] == null ) {
             data.max[i] = numberValue;
           } else {
-            if ( ((Double) data.max[i]) < numberValue) {
+            if ( ( (Double) data.max[i] ) < numberValue ) {
               data.max[i] = numberValue;
             }
           }
-        
+
         } else {
           // not a number...
           // either categorical or boolean - can't tell until al are complete (in buildAggregate) - so don't set anything here!
           //data.type[i] = "Categorical";
-          
+
 
 
           // TODO date
@@ -210,11 +210,11 @@ public class FieldAnalysis extends BaseStep implements StepInterface {
       }
       */
 
-    } else {
-      data.nullCount[i]++;
-    } // end null if
+      } else {
+        data.nullCount[i]++;
+      } // end null if
+    }
   }
-}
 
   // End of the road, build a row to output!
   private synchronized Object[] buildAggregates() {
@@ -237,8 +237,8 @@ public class FieldAnalysis extends BaseStep implements StepInterface {
     double skewnessSigma;
     double xMinusMean;
     double stddev;
-    HashMap<String,Long> patternCounts;
-    
+    HashMap<String, Long> patternCounts;
+
     long largestCount;
     String largestFormat;
     String dateFormat;
@@ -249,41 +249,41 @@ public class FieldAnalysis extends BaseStep implements StepInterface {
     Iterator<String> keyIter;
     Pattern datePattern;
     long numMatches;
-    
+
     HashMap<String, Integer> histogram;
     long maxLength = -1;
-    
+
     String val;
- 
+
     Matcher newMatcher;
 
     int NUM_SUM_FIELDS = 18;
-    
+
     for ( int i = 0; i < data.fieldnrs.length; i++ ) {
-      
-      
-      row = RowDataUtil.allocateRowData(NUM_SUM_FIELDS); // summary fields
+
+
+      row = RowDataUtil.allocateRowData( NUM_SUM_FIELDS ); // summary fields
       rows[i] = row;
 
       // transpose fields to rows
 
       // calculate averages, stddev etc here
-      data.mean[i] = new Double(((Double)data.sum[i]).doubleValue() / ((long)data.counts[i]));
+      data.mean[i] = new Double( ( (Double) data.sum[i] ).doubleValue() / ( (long) data.counts[i] ) );
 
       row[0] = data.fieldNames[i];
       // info for all types
       // Loop over all values to determine type
-      valueList = (ArrayList)data.allValues[i];
-      distinctValues = (HashSet<String>)data.distinctValues[i];
-      
+      valueList = (ArrayList) data.allValues[i];
+      distinctValues = (HashSet<String>) data.distinctValues[i];
+
       maxLength  = -1;
-      
+
       valueListSize = valueList.size();
 
-      allNumericValues = (ArrayList<Double>)data.allNumericValues[i];
+      allNumericValues = (ArrayList<Double>) data.allNumericValues[i];
       numNumeric = allNumericValues.size();
       notNumeric = valueListSize - numNumeric;
-      
+
       histogram = new HashMap<String, Integer>();
       /*
       for (String val: valueList ) {
@@ -296,8 +296,8 @@ public class FieldAnalysis extends BaseStep implements StepInterface {
         }
       }
       */
-      
-      if (numNumeric > notNumeric && ( 2 != distinctValues.size())) {
+
+      if ( numNumeric > notNumeric && ( 2 != distinctValues.size() ) ) {
         // continuous numeric
         row[1] = "Continuous";
         row[13] = "Double"; // TODO sniff other numeric types (positiveInteger, etc)
@@ -308,31 +308,31 @@ public class FieldAnalysis extends BaseStep implements StepInterface {
         row[8] = data.mean[i];
         // median, std dev, skewness
         // sort all values once
-        Collections.sort(allNumericValues);
+        Collections.sort( allNumericValues );
         allNumericSize = allNumericValues.size();
-        if (allNumericSize > 0) {
-          row[9] = allNumericValues.get((int)Math.floor(allNumericSize / 2)); // median
-  
+        if ( allNumericSize > 0 ) {
+          row[9] = allNumericValues.get( (int) Math.floor( allNumericSize / 2 ) ); // median
+
           // now for std dev and skewness
           // skewness = [n / (n -1) (n - 2)] sum[(x_i - mean)^3] / std^3 
-          mean = ((Double)data.mean[i]).doubleValue();
+          mean = ( (Double) data.mean[i] ).doubleValue();
           sigma = 0.0d;
           skewnessSigma = 0.0d;
           xMinusMean = 0.0d;
           dIter = allNumericValues.iterator();
-          while (dIter.hasNext()) {
+          while ( dIter.hasNext() ) {
             dval = dIter.next();
             xMinusMean = dval.doubleValue() - mean;
-            sigma += Math.pow(xMinusMean,2);
-            skewnessSigma += Math.pow(xMinusMean,3);
+            sigma += Math.pow( xMinusMean, 2 );
+            skewnessSigma += Math.pow( xMinusMean, 3 );
           }
-          stddev = sigma / (valueList.size() - 1);
-          row[10] = new Double(stddev); // stddev
-          if (allNumericSize > 3 && 0 != stddev ) {
+          stddev = sigma / ( valueList.size() - 1 );
+          row[10] = new Double( stddev ); // stddev
+          if ( allNumericSize > 3 && 0 != stddev ) {
             row[11] = new Double(
-              (1.0d * (allNumericSize / (allNumericSize - 1)*(allNumericSize - 2))) *
+              ( 1.0d * ( allNumericSize / ( allNumericSize - 1 ) * ( allNumericSize - 2 ) ) ) *
               skewnessSigma / 
-              Math.pow(stddev,3)
+              Math.pow( stddev, 3 )
             ); // skewness
           } // end skewness sanity if
         } // end has values if
@@ -340,22 +340,22 @@ public class FieldAnalysis extends BaseStep implements StepInterface {
       } else {
         // categorical or boolean or date
         row[1] = "Categorical";
-        
-        
-        
+
+
+
         //#######################################################################################################
         //
         //  Jonathan 
         //
         //#######################################################################################################
         //Go through whole list of values to count appearance of individual values
-        
+
         //Intialize hashmap 
         Iterator<String> iter = distinctValues.iterator();
-        while(iter.hasNext()){
-        	histogram.put(iter.next(), 0);
+        while( iter.hasNext() ){
+        	histogram.put( iter.next(), 0 );
         }
-        		
+
         Iterator<String> valueIterator = valueList.iterator();
         
         while(valueIterator.hasNext()) {
