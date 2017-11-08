@@ -12,7 +12,7 @@ Note also that this plugin blocks until all source rows are analysed - it does n
 
 ## Building the plugin
 
-You can use Microsoft Visual Studio Code (free) to build this, or manually.
+You can use Microsoft Visual Studio Code (free) to build this, or manually using Maven.
 
 ### Visual Studio Code
 
@@ -27,7 +27,7 @@ This will download all dependencies, and then build the project.
 
 Note: On second and subsequent builds there is no need to download the dependencies again. To do this, run the dist-no-download task instead.
 
-### Manual
+### Manually using Maven
 
 Change to the root directory (the same as this readme file), and type the following:-
 
@@ -46,3 +46,11 @@ mvn install -Drelease -e -o
 You now have a ZIP file in assemblies/plugin/target/ unpack this in to your PENTAHO_HOME/design-tools/data-integration/plugins folder.
 
 WARNING: This repository builds to the latest version of PDI - likely a version you don't have installed! In order for PDI to not just ignore the plugin, after installing, edit the PENTAHO_HOME/design-tools/data-integration/plugins/field-analysis-plugin/version.xml file to list your version of PDI. E.g. 7.1.0.0-12. Save the file and restart PDI to use the plugin.
+
+## Errata / Bugs
+
+Please report bugs using the Issues feature of this GitHub repository.
+
+## License and Copyright
+
+All material in this repository are Copyright 2002-2017 Hitachi Vantara. All code is licensed as Apache 2.0 unless explicitly stated.

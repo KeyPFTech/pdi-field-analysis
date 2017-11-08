@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -136,7 +136,7 @@ public class FieldAnalysisDialog extends BaseStepDialog implements StepDialogInt
     final int FieldsCols = 3;
     final int FieldsRows = input.getFieldName().length;
 
-    ColumnInfo[] colinf = new ColumnInfo[FieldsCols];
+    ColumnInfo[] colinf = new ColumnInfo[ FieldsCols ];
     colinf[0] =
       new ColumnInfo(
         BaseMessages.getString( PKG, "FieldAnalysisDialog.ColumnInfo.Name" ), ColumnInfo.COLUMN_TYPE_TEXT,
@@ -256,6 +256,10 @@ public class FieldAnalysisDialog extends BaseStepDialog implements StepDialogInt
 
   private void ok() {
     if ( Utils.isEmpty( wStepname.getText() ) ) {
+      MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
+      mb.setText( BaseMessages.getString( PKG, "System.StepJobEntryNameMissing.Title" ) );
+      mb.setMessage( BaseMessages.getString( PKG, "System.JobEntryNameMissing.Msg" ) );
+      mb.open();
       return;
     }
 
