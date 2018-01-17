@@ -50,17 +50,14 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
-import org.pentaho.di.core.row.RowMeta;
-import org.pentaho.di.core.row.ValueMeta;
 import org.w3c.dom.Node;
 
 /*
  * Created on 16-aug-2017
  *
  */
-
 @Step( id = "FieldAnalysis",
- image = "field_analysis_plugin.svg",
+  image = "field_analysis_plugin.svg",
   i18nPackageName = "org.pentaho.di.trans.steps.fieldanalysis", name = "FieldAnalysisMeta.Name",
   description = "FieldAnalysisMeta.Description",
   categoryDescription = "StatisticsCategory.Name" )
@@ -179,7 +176,7 @@ public class FieldAnalysisMeta extends BaseStepMeta implements StepMetaInterface
 
   @Override
   public Object clone() {
-	  FieldAnalysisMeta retval = (FieldAnalysisMeta) super.clone();
+    FieldAnalysisMeta retval = (FieldAnalysisMeta) super.clone();
 
     int nrfields = fieldName.length;
 
@@ -236,15 +233,15 @@ public class FieldAnalysisMeta extends BaseStepMeta implements StepMetaInterface
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     try {
       // Remember the types of the row.
-      
+
       int[] fieldnrs = new int[fieldName.length];
       ValueMetaInterface[] values = new ValueMetaInterface[fieldName.length];
 
       for ( int i = 0; i < fieldName.length; i++ ) {
         fieldnrs[i] = r.indexOfValue( fieldName[i] );
-        ValueMetaInterface v =r.getValueMeta( fieldnrs[i] );
-        
-        
+        ValueMetaInterface v = r.getValueMeta( fieldnrs[i] );
+
+
         switch ( aggregateType[i] ) {
           case TYPE_AGGREGATE_AVERAGE:
           case TYPE_AGGREGATE_COUNT:
@@ -257,7 +254,7 @@ public class FieldAnalysisMeta extends BaseStepMeta implements StepMetaInterface
         }
 
         //row.removeValueMeta( fieldnrs[i] );
-        
+
       }
 
       // Only the aggregate is returned!
@@ -269,79 +266,79 @@ public class FieldAnalysisMeta extends BaseStepMeta implements StepMetaInterface
         v.setOrigin( name );
         row.addValueMeta( v );
       }*/
-      
+
 
       //data.outputRowMeta = new RowMeta();
-      
+
       RowMeta row = new RowMeta();
-      ValueMeta vm = new ValueMeta("FieldName",ValueMetaInterface.TYPE_STRING);
-      vm.setOrigin(name);
-      row.addValueMeta(vm);
+      ValueMeta vm = new ValueMeta( "FieldName", ValueMetaInterface.TYPE_STRING );
+      vm.setOrigin( name );
+      row.addValueMeta( vm );
 
-      vm = new ValueMeta("Type",ValueMetaInterface.TYPE_STRING);
-      vm.setOrigin(name);
-      row.addValueMeta(vm);
-      
-      vm = new ValueMeta("Count",ValueMetaInterface.TYPE_INTEGER);
-      vm.setOrigin(name);
-      row.addValueMeta(vm);
-      
-      vm = new ValueMeta("DistinctValuesCount",ValueMetaInterface.TYPE_INTEGER);
-      vm.setOrigin(name);
-      row.addValueMeta(vm);
-            
-      vm = new ValueMeta("NullValuesCount",ValueMetaInterface.TYPE_INTEGER);
-      vm.setOrigin(name);
-      row.addValueMeta(vm);
+      vm = new ValueMeta( "Type", ValueMetaInterface.TYPE_STRING );
+      vm.setOrigin( name );
+      row.addValueMeta( vm );
 
-      vm = new ValueMeta("Min",ValueMetaInterface.TYPE_NUMBER);
-      vm.setOrigin(name);
-      row.addValueMeta(vm);
+      vm = new ValueMeta( "Count", ValueMetaInterface.TYPE_INTEGER );
+      vm.setOrigin( name );
+      row.addValueMeta( vm );
 
-      vm = new ValueMeta("Max",ValueMetaInterface.TYPE_NUMBER);
-      vm.setOrigin(name);
-      row.addValueMeta(vm);
+      vm = new ValueMeta( "DistinctValuesCount", ValueMetaInterface.TYPE_INTEGER );
+      vm.setOrigin( name );
+      row.addValueMeta( vm );
 
-      vm = new ValueMeta("Sum",ValueMetaInterface.TYPE_NUMBER);
-      vm.setOrigin(name);
-      row.addValueMeta(vm);
+      vm = new ValueMeta( "NullValuesCount", ValueMetaInterface.TYPE_INTEGER );
+      vm.setOrigin( name );
+      row.addValueMeta( vm );
 
-      vm = new ValueMeta("Mean",ValueMetaInterface.TYPE_NUMBER);
-      vm.setOrigin(name);
-      row.addValueMeta(vm);
-      vm = new ValueMeta("Median",ValueMetaInterface.TYPE_NUMBER);
-      vm.setOrigin(name);
-      row.addValueMeta(vm);
-      vm = new ValueMeta("StandardDeviation",ValueMetaInterface.TYPE_NUMBER);
-      vm.setOrigin(name);
-      row.addValueMeta(vm);
-      vm = new ValueMeta("Skewness",ValueMetaInterface.TYPE_NUMBER);
-      vm.setOrigin(name);
-      row.addValueMeta(vm);
-      vm = new ValueMeta("IsBoolean",ValueMetaInterface.TYPE_BOOLEAN);
-      vm.setOrigin(name);
-      row.addValueMeta(vm);
-      vm = new ValueMeta("DataType",ValueMetaInterface.TYPE_STRING);
-      vm.setOrigin(name);
-      row.addValueMeta(vm);
-      vm = new ValueMeta("Format",ValueMetaInterface.TYPE_STRING);
-      vm.setOrigin(name);
-      row.addValueMeta(vm);
-      vm = new ValueMeta("Dispersion",ValueMetaInterface.TYPE_NUMBER);
-      vm.setOrigin(name);
-      row.addValueMeta(vm);
-      vm = new ValueMeta("UniqueNames",ValueMetaInterface.TYPE_STRING);
-      vm.setOrigin(name);
-      row.addValueMeta(vm);
-      vm = new ValueMeta("UniqueValues",ValueMetaInterface.TYPE_STRING);
-      vm.setOrigin(name);
-      row.addValueMeta(vm);
-      vm = new ValueMeta("MaxLength",ValueMetaInterface.TYPE_NUMBER);
-      vm.setOrigin(name);
-      row.addValueMeta(vm);
-      
-      r.addRowMeta(row);
-      
+      vm = new ValueMeta( "Min", ValueMetaInterface.TYPE_NUMBER );
+      vm.setOrigin( name );
+      row.addValueMeta( vm );
+
+      vm = new ValueMeta( "Max", ValueMetaInterface.TYPE_NUMBER );
+      vm.setOrigin( name );
+      row.addValueMeta( vm );
+
+      vm = new ValueMeta( "Sum", ValueMetaInterface.TYPE_NUMBER );
+      vm.setOrigin( name );
+      row.addValueMeta( vm );
+
+      vm = new ValueMeta( "Mean", ValueMetaInterface.TYPE_NUMBER );
+      vm.setOrigin( name );
+      row.addValueMeta( vm );
+      vm = new ValueMeta( "Median", ValueMetaInterface.TYPE_NUMBER );
+      vm.setOrigin( name );
+      row.addValueMeta( vm );
+      vm = new ValueMeta( "StandardDeviation", ValueMetaInterface.TYPE_NUMBER );
+      vm.setOrigin( name );
+      row.addValueMeta( vm );
+      vm = new ValueMeta( "Skewness", ValueMetaInterface.TYPE_NUMBER );
+      vm.setOrigin( name );
+      row.addValueMeta( vm );
+      vm = new ValueMeta( "IsBoolean", ValueMetaInterface.TYPE_BOOLEAN );
+      vm.setOrigin( name );
+      row.addValueMeta( vm );
+      vm = new ValueMeta( "DataType", ValueMetaInterface.TYPE_STRING );
+      vm.setOrigin( name );
+      row.addValueMeta( vm );
+      vm = new ValueMeta( "Format", ValueMetaInterface.TYPE_STRING );
+      vm.setOrigin( name );
+      row.addValueMeta( vm );
+      vm = new ValueMeta( "Dispersion", ValueMetaInterface.TYPE_NUMBER );
+      vm.setOrigin( name );
+      row.addValueMeta( vm );
+      vm = new ValueMeta( "UniqueNames", ValueMetaInterface.TYPE_STRING );
+      vm.setOrigin( name );
+      row.addValueMeta( vm );
+      vm = new ValueMeta( "UniqueValues", ValueMetaInterface.TYPE_STRING );
+      vm.setOrigin( name );
+      row.addValueMeta( vm );
+      vm = new ValueMeta( "MaxLength", ValueMetaInterface.TYPE_NUMBER );
+      vm.setOrigin( name );
+      row.addValueMeta( vm );
+
+      r.addRowMeta( row );
+
       // WE MAY NEED TO STILL CALL REMOVE VALUE META FOR DELETED FIELDS
       /*
       for ( int i = 0; i < fieldName.length; i++ ) {
@@ -357,41 +354,41 @@ public class FieldAnalysisMeta extends BaseStepMeta implements StepMetaInterface
       throw new KettleStepException( e );
     }
   }
- 
+
   public void getFieldsFromInput( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
-  VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
-  try {
-    // Remember the types of the row.
-    int[] fieldnrs = new int[fieldName.length];
-    ValueMetaInterface[] values = new ValueMetaInterface[fieldName.length];
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    try {
+      // Remember the types of the row.
+      int[] fieldnrs = new int[fieldName.length];
+      ValueMetaInterface[] values = new ValueMetaInterface[fieldName.length];
 
-    for ( int i = 0; i < fieldName.length; i++ ) {
-      fieldnrs[i] = row.indexOfValue( fieldName[i] );
-      ValueMetaInterface v = row.getValueMeta( fieldnrs[i] );
-      switch ( aggregateType[i] ) {
-        case TYPE_AGGREGATE_AVERAGE:
-        case TYPE_AGGREGATE_COUNT:
-        case TYPE_AGGREGATE_SUM:
-          values[i] = ValueMetaFactory.cloneValueMeta( v, ValueMetaInterface.TYPE_NUMBER );
-          values[i].setLength( -1, -1 );
-          break;
-        default:
-          values[i] = ValueMetaFactory.cloneValueMeta( v );
+      for ( int i = 0; i < fieldName.length; i++ ) {
+        fieldnrs[i] = row.indexOfValue( fieldName[i] );
+        ValueMetaInterface v = row.getValueMeta( fieldnrs[i] );
+        switch ( aggregateType[i] ) {
+          case TYPE_AGGREGATE_AVERAGE:
+          case TYPE_AGGREGATE_COUNT:
+          case TYPE_AGGREGATE_SUM:
+            values[i] = ValueMetaFactory.cloneValueMeta( v, ValueMetaInterface.TYPE_NUMBER );
+            values[i].setLength( -1, -1 );
+            break;
+          default:
+            values[i] = ValueMetaFactory.cloneValueMeta( v );
+        }
       }
-    }
 
-    // Only the aggregate is returned!
-    row.clear();
+      // Only the aggregate is returned!
+      row.clear();
 
-    for ( int i = 0; i < fieldName.length; i++ ) {
-      ValueMetaInterface v = values[i];
-      v.setName( fieldNewName[i] );
-      v.setOrigin( name );
-      row.addValueMeta( v );
+      for ( int i = 0; i < fieldName.length; i++ ) {
+        ValueMetaInterface v = values[i];
+        v.setName( fieldNewName[i] );
+        v.setOrigin( name );
+        row.addValueMeta( v );
+      }
+    } catch ( Exception e ) {
+      throw new KettleStepException( e );
     }
-  } catch ( Exception e ) {
-    throw new KettleStepException( e );
-  }
   }
 
   @Override

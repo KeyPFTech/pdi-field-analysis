@@ -34,42 +34,42 @@ import java.util.HashSet;
  *
  */
 public class FieldAnalysisData extends BaseStepData implements StepDataInterface {
- 
-	  public RowMetaInterface outputRowMeta;
-	  public RowMetaInterface inputRowMeta;
-	
-public int[] fieldnrs;
-public int nrfields;
 
-public Object[] values;
+	public RowMetaInterface outputRowMeta;
+	public RowMetaInterface inputRowMeta;
 
-public Object[] fieldNames;
+  public int[] fieldnrs;
+  public int nrfields;
 
-// fieldName, type, then...
-public Object[] type; // continuous, categorical, time
-public long[] counts; // non nulls only counted
-public Object[] distinctValues; // HashSet 
-public Object[] allValues; // ArrayList<String> 
-public Object[] allNumericValues; // ArrayList<Double>
-public long[] nullCount;
-public Object[] min;
-public Object[] max;
-public Object[] sum; // to help calculate std dev and mean
+  public Object[] values;
 
-public Object[] mean;
-public Object[] median;
-public Object[] stddev;
-public Object[] skewness;
+  public Object[] fieldNames;
 
-public Object[] isBoolean; // Boolean values
+  // fieldName, type, then...
+  public Object[] type; // continuous, categorical, time
+  public long[] counts; // non nulls only counted
+  public Object[] distinctValues; // HashSet 
+  public Object[] allValues; // ArrayList<String> 
+  public Object[] allNumericValues; // ArrayList<Double>
+  public long[] nullCount;
+  public Object[] min;
+  public Object[] max;
+  public Object[] sum; // to help calculate std dev and mean
 
-public Object[] uniqueNames; //String containing all unique values for a categorical variable
-public Object[] uniqueValues; //String containing all unique values for a categorical variable
-public Object[] maxLength;
+  public Object[] mean;
+  public Object[] median;
+  public Object[] stddev;
+  public Object[] skewness;
 
-public FieldAnalysisData() {
-  super();
-}
+  public Object[] isBoolean; // Boolean values
+
+  public Object[] uniqueNames; //String containing all unique values for a categorical variable
+  public Object[] uniqueValues; //String containing all unique values for a categorical variable
+  public Object[] maxLength;
+
+  public FieldAnalysisData() {
+    super();
+  }
 
 
 }

@@ -57,6 +57,11 @@ import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
+/**
+ * Dialog box for the Field Analaysis PDI custom step
+ * @author Adam Fowler {@literal adam.fowler@hitachivantara.com}
+ * @since 1.0 16-Aug-2017
+ */
 public class FieldAnalysisDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = FieldAnalysisMeta.class; // for i18n purposes, needed by Translator2!!
 
