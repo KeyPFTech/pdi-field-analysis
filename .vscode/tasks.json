@@ -9,12 +9,12 @@
             "command": "mvn install -Drelease -e",
             "group": "build"
         },
-
         {
             "taskName": "dist-no-download",
             "type": "shell",
             "command": "mvn install -Drelease -e -o",
-            "group": "build"
+            "group": "build",
+            "problemMatcher": []
         }
     ]
 }
