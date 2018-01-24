@@ -496,11 +496,11 @@ public class FieldAnalysis extends BaseStep implements StepInterface {
 
         row[16] = uniqueNames.substring( 0, uniqueNames.length() - 1 );
         row[17] = uniqueVals.substring( 0, uniqueVals.length() - 1 );
-        row[18] = maxLength;
+        row[18] = new Double( maxLength );
       } else {
         row[16] = "";
         row[17] = "";
-        row[18] = 0.0;
+        row[18] = new Double( 0.0 );
       }
     //#######################################################################################################
 
