@@ -54,3 +54,7 @@ Please report bugs using the Issues feature of this GitHub repository.
 ## License and Copyright
 
 All material in this repository are Copyright 2002-2017 Hitachi Vantara. All code is licensed as Apache 2.0 unless explicitly stated.
+
+## Support Statement
+
+This work is at Stage 1 : Development Phase: Start-up phase of an internal project. Usually a Labs experiment. (Unsupported)
