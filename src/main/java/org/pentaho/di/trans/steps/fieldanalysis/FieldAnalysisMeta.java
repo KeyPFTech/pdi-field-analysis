@@ -213,7 +213,6 @@ public class FieldAnalysisMeta extends BaseStepMeta implements StepMetaInterface
     }
   }
 
-  @Override
   public void setDefault() {
     int i, nrfields;
 
@@ -514,13 +513,11 @@ public class FieldAnalysisMeta extends BaseStepMeta implements StepMetaInterface
 
   }
 
-  @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
     TransMeta transMeta, Trans trans ) {
     return new FieldAnalysis( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
-  @Override
   public StepDataInterface getStepData() {
     return new FieldAnalysisData();
   }
